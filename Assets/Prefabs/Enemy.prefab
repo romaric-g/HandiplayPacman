@@ -390,7 +390,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f6698000b754b24da69867951be5c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSystem: {fileID: 0}
   m_leftSprite: {fileID: 0}
   m_rightSprite: {fileID: 0}
   m_frontSprite: {fileID: 0}

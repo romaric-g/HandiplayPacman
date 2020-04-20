@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Direction
+public enum GameStats
 {
-
-    UP,
-    LEFT,
-    DOWN,
-    RIGHT
+    WAIT,
+    PLAY,
+    PAUSE,
+    DIED
 }

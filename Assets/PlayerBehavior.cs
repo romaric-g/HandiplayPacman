@@ -5,28 +5,26 @@ using UnityEngine;
 public class PlayerBehavior : MonoBehaviour
 {
 
-    public float m_speed = 1500f;
-    public float directionColliderOffset = 28f;
     public Rigidbody2D m_rb2D;
     public SpriteRenderer m_spriteRenderer;
     public BoxCollider2D nextDirCollider;
+    public HealthBar healthBar;
+
+    public float m_speed = 1500f;
+    public float directionColliderOffset = 28f;
+
+
+    // Strites
+    public Sprite m_leftSprite; public Sprite m_rightSprite; public Sprite m_frontSprite; public Sprite m_backSprite;
+
 
     private Sprite currentSprite;
     private Vector2 currentDirection;
     private Vector2 nextDirection;
-
-    public Vector3 lastPosition;
-
-    /* SHOOT */
-    public GameObject m_ball;
-    public float m_shootDelay = 1f;
-    private float m_shootDelayReaming = 0f;
-
-    /* LIFE */
+    private Vector3 lastPosition;
     private int life = 3;
 
-    // Strites
-    public Sprite m_leftSprite; public Sprite m_rightSprite; public Sprite m_frontSprite; public Sprite m_backSprite;
+    private bool play = false;
 
     // Start is called before the first frame update
     void Start()
@@ -37,71 +35,83 @@ public class PlayerBehavior : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!nextDirCollider.IsTouchingLayers())
+
+        if(play)
         {
-            moveNextDirection();
+            if (!nextDirCollider.IsTouchingLayers())
+            {
+                moveNextDirection();
+            }
+
+            if (Input.GetAxis("Horizontal") < 0f)
+            {
+                this.nextDirection = Vector2.left;
+                this.currentSprite = m_leftSprite;
+            }
+            if (Input.GetAxis("Horizontal") > 0f)
+            {
+                this.nextDirection = Vector2.right;
+                this.currentSprite = m_rightSprite;
+            }
+            if (Input.GetAxis("Vertical") > 0f)
+            {
+                this.nextDirection = Vector2.up;
+                this.currentSprite = m_backSprite;
+            }
+            if (Input.GetAxis("Vertical") < 0f)
+            {
+                this.nextDirection = Vector2.down;
+                this.currentSprite = m_frontSprite;
+            }
+
+            if (this.lastPosition == this.transform.position)
+            {
+                this.currentDirection = Vector2.zero;
+            }
+            else
+            {
+                Vector2 dir = getDirectionVector2(this.lastPosition, this.transform.position);
+            }
+            updateDirCollider();
+
+            if (currentDirection == Vector2.zero)
+            {
+                moveNextDirection();
+            }
+            if (currentDirection != Vector2.zero)
+            {
+                this.lastPosition = this.transform.position;
+                this.move(this.currentDirection);
+            }
         }
 
-        if (Input.GetAxis("Horizontal") < 0f)
-        {
-            this.nextDirection = Vector2.left;
-            this.currentSprite = m_leftSprite;
-        }
-        if (Input.GetAxis("Horizontal") > 0f)
-        {
-            this.nextDirection = Vector2.right;
-            this.currentSprite = m_rightSprite;
-        }
-        if (Input.GetAxis("Vertical") > 0f)
-        {
-            this.nextDirection = Vector2.up;
-            this.currentSprite = m_backSprite;
-        }
-        if (Input.GetAxis("Vertical") < 0f)
-        {
-            this.nextDirection = Vector2.down;
-            this.currentSprite = m_frontSprite;
-        }
-
-        if (this.lastPosition == this.transform.position)
-        {
-            this.currentDirection = Vector2.zero;
-        }
-        else
-        {
-            Vector2 dir = getDirectionVector2(this.lastPosition, this.transform.position);
-        }
-        updateDirCollider();
-
-        if (currentDirection == Vector2.zero)
-        {
-            moveNextDirection();
-        }
-        if (currentDirection != Vector2.zero)
-        {
-            this.lastPosition = this.transform.position;
-            this.move(this.currentDirection);
-        }
 
     }
 
-
+    /* EVENTS */
     private void OnTriggerExit2D(Collider2D other)
     {
-       
-        if (other.gameObject.tag == "Obstacle") {
-            moveNextDirection();
+        if(play)
+        {
+            if (other.gameObject.tag == "Obstacle")
+            {
+                moveNextDirection();
+            }
         }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log(collision);
-        if(collision.gameObject.tag == "Enemy")
+        if (play)
         {
-            life--;
-            Destroy(gameObject);
+            if (collision.gameObject.tag == "Enemy")
+            {
+
+                setLife(life - 1);
+            }
         }
+
     }
 
 
@@ -136,4 +146,17 @@ public class PlayerBehavior : MonoBehaviour
         float y = v1.y - v2.y;
         return new Vector2(x,y);
     }
+
+
+    public void setLife(int life)
+    {
+        this.life = life;
+        this.healthBar.setValue(life);
+    }
+
+    public void setPlay(bool play)
+    {
+        this.play = play;
+    }
+
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PieceGetter : MonoBehaviour
 {
 
-    public int pieceGet = 0;
+    private int pieceGet = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,5 +25,15 @@ public class PieceGetter : MonoBehaviour
             Destroy(collider.gameObject);
             pieceGet++;
         }
+    }
+
+    public int getPiecesAmountGet()
+    {
+        return pieceGet;
+    }
+
+    public void Reset()
+    {
+        this.pieceGet = 0;        
     }
 }
