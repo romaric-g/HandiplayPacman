@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     public EnemyManager enemyManager;
     public PieceGetter pieceGetter;
 
+    public MenuManager menuManager;
+
     private GameStats gameStats = GameStats.WAIT;
     private int level = 0;
     private int pieces = 0;
@@ -20,11 +22,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         grid = new Grid(49, 29, 30f, 20f, new Vector3(-735f, -290f));
-        nextLevel();
     }
     void Update()
     {
-        Debug.Log(pieceGetter.getPiecesAmountGet() + " >= " + pieces);
         if(gameStats == GameStats.PLAY && pieceGetter.getPiecesAmountGet() >= pieces)
         {
             stopLevel();
@@ -105,7 +105,9 @@ public class GameManager : MonoBehaviour
     public void resetGame()
     {
         stopLevel();
+        this.player.ResetPlayer();
         this.level = 0;
+        this.menuManager.HomeMenu();
     }
 }
 

@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerBehavior : MonoBehaviour
 {
 
+    public GameManager gameManager;
+
     public Rigidbody2D m_rb2D;
     public SpriteRenderer m_spriteRenderer;
     public BoxCollider2D nextDirCollider;
@@ -147,11 +149,19 @@ public class PlayerBehavior : MonoBehaviour
         return new Vector2(x,y);
     }
 
+    public void ResetPlayer()
+    {
+        this.life = 3;
+    }
 
     public void setLife(int life)
     {
         this.life = life;
         this.healthBar.setValue(life);
+        if(this.life <= 0)
+        {
+            this.gameManager.resetGame();
+        }
     }
 
     public void setPlay(bool play)

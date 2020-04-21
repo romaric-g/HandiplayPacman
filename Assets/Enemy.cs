@@ -40,17 +40,21 @@ public class Enemy : MonoBehaviour
 
             if (this.lastPosition == transform.position)
             {
-                currentDirection = currentDirection * -1;
-
+                positionChange += Time.fixedDeltaTime;
+            }
+            else
+            {
+                positionChange = 0f;
             }
             
-            if(positionChange > 1f)
+            if(positionChange > 0.2f)
             {
-                this.lastPosition = transform.position;
-                positionChange = 0;
+                currentDirection = currentDirection * -1;
+                positionChange = 0f;
             }
-            positionChange += Time.fixedDeltaTime;
-            Debug.Log(Time.fixedDeltaTime);
+           
+            
+            this.lastPosition = transform.position;
             move(currentDirection);
 
         }

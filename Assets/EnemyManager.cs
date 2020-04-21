@@ -47,7 +47,7 @@ public class EnemyManager : MonoBehaviour
 
     public Enemy summonEnemy(Vector2 position)
     {
-        Enemy gameobject = Instantiate<Enemy>(enemy, position, Quaternion.identity);
+        Enemy gameobject = Instantiate<Enemy>(enemy, position + new Vector2(0,-5), Quaternion.identity);
         enemies.Add(gameobject);
         return enemy;
     }
