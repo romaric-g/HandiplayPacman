@@ -12,9 +12,10 @@ public class PlayerBehavior : MonoBehaviour
     public BoxCollider2D nextDirCollider;
     public HealthBar healthBar;
 
+    public SoundManager soundManager;
+
     public float m_speed = 1500f;
     public float directionColliderOffset = 28f;
-
 
     // Strites
     public Sprite m_leftSprite; public Sprite m_rightSprite; public Sprite m_frontSprite; public Sprite m_backSprite;
@@ -27,6 +28,7 @@ public class PlayerBehavior : MonoBehaviour
     private int life = 3;
 
     private bool play = false;
+    private bool changeSound = false;
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +75,11 @@ public class PlayerBehavior : MonoBehaviour
             else
             {
                 Vector2 dir = getDirectionVector2(this.lastPosition, this.transform.position);
+                if (changeSound)
+                {
+                    this.soundManager.flipSound.Play();
+                    this.changeSound = false;
+                }
             }
             updateDirCollider();
 
@@ -111,6 +118,7 @@ public class PlayerBehavior : MonoBehaviour
             {
 
                 setLife(life - 1);
+                this.gameManager.respawnPlayer();
             }
         }
 
@@ -124,12 +132,14 @@ public class PlayerBehavior : MonoBehaviour
 
     public void moveNextDirection()
     {
-        if (nextDirection != Vector2.zero)
+        if (nextDirection != Vector2.zero && this.currentDirection != this.nextDirection)
         {
+            Debug.Log(this.currentDirection + " != " + this.nextDirection);
             this.currentDirection = this.nextDirection;
             this.m_spriteRenderer.sprite = currentSprite;
             this.nextDirection = default;
             this.move(Vector2.zero);
+            changeSound = true;
         }
     }
 
@@ -155,12 +165,16 @@ public class PlayerBehavior : MonoBehaviour
     }
 
     public void setLife(int life)
-    {
+    {   
+        if(this.life > life)
+        {
+            soundManager.deathSound.Play();
+        }
         this.life = life;
         this.healthBar.setValue(life);
         if(this.life <= 0)
         {
-            this.gameManager.resetGame();
+            this.gameManager.StopGame();
         }
     }
 

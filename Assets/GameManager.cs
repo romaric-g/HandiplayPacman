@@ -10,10 +10,13 @@ public class GameManager : MonoBehaviour
     private Grid grid;
 
     public PlayerBehavior player;
+    public int respawnX;
+    public int respawnY;
     public EnemyManager enemyManager;
     public PieceGetter pieceGetter;
 
     public MenuManager menuManager;
+    public SoundManager soundManager;
 
     private GameStats gameStats = GameStats.WAIT;
     private int level = 0;
@@ -22,6 +25,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         grid = new Grid(49, 29, 30f, 20f, new Vector3(-735f, -290f));
+
+        menuManager.HomeMenu();
     }
     void Update()
     {
@@ -41,14 +46,21 @@ public class GameManager : MonoBehaviour
         this.gameStats = GameStats.WAIT;
     }
 
+    public void StartGame()
+    {
+        resetGame();
+        respawnPlayer();
+        nextLevel();
+    }
     public void nextLevel()
     {
-
+        if(this.level > 0)this.soundManager.levelupSound.Play();
         this.level++;
         this.enemyManager.clearEnemies();
         this.enemyManager.summonForLevel(this.level, grid);
 
         this.pieceGetter.Reset();
+        this.respawnPlayer();
         fillPieces();
 
         this.enemyManager.setPlay(true);
@@ -57,6 +69,10 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public int getLevel()
+    {
+        return this.level;
+    }
     public void fillPieces()
     {
         pieces = 0;
@@ -84,6 +100,10 @@ public class GameManager : MonoBehaviour
 
     // Update is called once per frame
 
+    public void respawnPlayer()
+    {
+        this.player.transform.position = grid.GetWorldPosition(this.respawnX, this.respawnY);
+    }
     private void HandleClickToModifyGrid()
     {
         if (Input.GetMouseButtonDown(0))
@@ -107,7 +127,12 @@ public class GameManager : MonoBehaviour
         stopLevel();
         this.player.ResetPlayer();
         this.level = 0;
-        this.menuManager.HomeMenu();
+    }
+
+    public void StopGame()
+    {
+        this.menuManager.GameOver();
+        this.resetGame();
     }
 }
 

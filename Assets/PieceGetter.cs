@@ -5,6 +5,7 @@ using UnityEngine;
 public class PieceGetter : MonoBehaviour
 {
 
+    public SoundManager soundManager;
     private int pieceGet = 0;
     // Start is called before the first frame update
     void Start()
@@ -23,6 +24,7 @@ public class PieceGetter : MonoBehaviour
         if (collider.gameObject.tag == "coin")
         {
             Destroy(collider.gameObject);
+            soundManager.coinSound.Play();
             pieceGet++;
         }
     }

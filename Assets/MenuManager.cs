@@ -6,7 +6,10 @@ public class MenuManager : MonoBehaviour
 {
 
     public GameManager gameManager;
+    public SoundManager soundManager;
     public GameObject mainMenu;
+    public GameObject gameoverMenu;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,12 +24,30 @@ public class MenuManager : MonoBehaviour
 
     public void PlayGame()
     {
-        mainMenu.active = false;
-        gameManager.nextLevel();
+        
+        soundManager.buttonSound.Play();
+        soundManager.menuMusic.Stop();
+        soundManager.gameMusic.Play();
+        this.closeMenus();
+        gameManager.StartGame();
     }
 
     public void HomeMenu()
     {
+        this.closeMenus();
+        soundManager.menuMusic.Play();
         mainMenu.active = true;
+    }
+
+    public void GameOver()
+    {
+        this.closeMenus();
+        gameoverMenu.active = true;
+    }
+
+    public void closeMenus()
+    {
+        mainMenu.active = false;
+        gameoverMenu.active = false;
     }
 }
