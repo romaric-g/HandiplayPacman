@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     private GameStats gameStats = GameStats.WAIT;
     private int level = 0;
     private int pieces = 0;
+
+    private List<GameObject> coins = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
@@ -36,16 +38,36 @@ public class GameManager : MonoBehaviour
             nextLevel();
         }
 
+        if (Input.GetKeyDown("escape"))
+        {//When a key is pressed down it see if it was the escape key if it was it will execute the code
+            SetPause(gameStats != GameStats.PAUSE);
+        }
     }
 
-
+    public void SetGameStats(GameStats stats)
+    {
+        this.gameStats = stats;
+        bool play = stats == GameStats.PLAY;
+        this.enemyManager.setPlay(play);
+        this.player.setPlay(play);
+    }
     public void stopLevel()
     {
-        this.enemyManager.setPlay(false);
-        this.player.setPlay(false);
-        this.gameStats = GameStats.WAIT;
+        SetGameStats(GameStats.WAIT);
     }
 
+    public void SetPause(bool pause)
+    {
+        if(pause && this.gameStats == GameStats.PLAY)
+        {
+            SetGameStats(GameStats.PAUSE);
+            menuManager.PauseMenu();
+        }else if(this.gameStats == GameStats.PAUSE)
+        {
+            SetGameStats(GameStats.PLAY);
+            menuManager.closeMenus();
+        }
+    }
     public void StartGame()
     {
         resetGame();
@@ -63,9 +85,7 @@ public class GameManager : MonoBehaviour
         this.respawnPlayer();
         fillPieces();
 
-        this.enemyManager.setPlay(true);
-        this.player.setPlay(true);
-        this.gameStats = GameStats.PLAY;
+        SetGameStats(GameStats.PLAY);
 
     }
 
@@ -87,11 +107,20 @@ public class GameManager : MonoBehaviour
                 {
                     position -= new Vector2(grid.GetCellWidth(), grid.GetCellHeight()) * 0.5f;
                     pieces++;
-                    Instantiate(coin, position, Quaternion.identity);
+                    coins.Add(Instantiate(coin, position, Quaternion.identity));
                 }
 
             }
         }
+    }
+
+    public void clearCoins()
+    {
+        foreach(GameObject coin in this.coins)
+        {
+            Destroy(coin);
+        }
+        this.coins.Clear();
     }
     public Grid getGrid()
     {
@@ -127,6 +156,7 @@ public class GameManager : MonoBehaviour
         stopLevel();
         this.player.ResetPlayer();
         this.level = 0;
+        clearCoins();
     }
 
     public void StopGame()

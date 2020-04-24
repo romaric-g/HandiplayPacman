@@ -76,14 +76,14 @@ public class PlayerBehavior : MonoBehaviour
             else
             {
                 Vector3 mousePosition = UtilsClass.GetMouseWorldPosition();
-                if (!mouseActive && Vector2.Distance(lastMousePosition, mousePosition) > 200f)
+                if (!mouseActive && Vector2.Distance(lastMousePosition, (transform.position - mousePosition)) > 200f)
                 {
                     setMouseActive(true);
                 }
 
                 if(mouseActive)
                 {
-                    this.lastMousePosition = mousePosition;
+                    this.lastMousePosition = transform.position - mousePosition;
                     float angle = AngleBetweenVector2(transform.position, mousePosition);
                     Debug.Log(angle);
                     if (angle > -45 && angle  < 45)
@@ -209,7 +209,6 @@ public class PlayerBehavior : MonoBehaviour
     {
         if (nextDirection != Vector2.zero && this.currentDirection != this.nextDirection)
         {
-            Debug.Log(this.currentDirection + " != " + this.nextDirection);
             this.currentDirection = this.nextDirection;
             this.m_spriteRenderer.sprite = currentSprite;
             this.nextDirection = default;
