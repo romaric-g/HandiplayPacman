@@ -10,6 +10,7 @@ public class MenuManager : MonoBehaviour
     public GameObject mainMenu;
     public GameObject gameoverMenu;
     public GameObject pauseMenu;
+    public GameObject creditsMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -64,11 +65,18 @@ public class MenuManager : MonoBehaviour
         this.closeMenus();
         pauseMenu.active = true;
     }
+
+    public void ToggleCredtiMenu()
+    {
+        soundManager.buttonSound.Play();
+        creditsMenu.active = !creditsMenu.active;
+    }
     public void closeMenus()
     {
         mainMenu.active = false;
         gameoverMenu.active = false;
         pauseMenu.active = false;
+        creditsMenu.active = false;
     }
 
 }
