@@ -32,14 +32,13 @@ public class PlayerBehavior : MonoBehaviour
     private bool changeSound = false;
 
     public float mouseSensi = 200f;
-    private bool mouseActive = true;
+    private bool mouseActive = false;
     private Vector2 lastMousePosition;
     public DirectionIndicator directionIndicator;
     // Start is called before the first frame update
     void Start()
     {
         this.currentSprite = m_frontSprite;
-        setMouseActive(mouseActive);
     }
 
     // Update is called once per frame
@@ -75,9 +74,11 @@ public class PlayerBehavior : MonoBehaviour
             }
             else
             {
+                Debug.Log("MA: " + mouseActive);
                 Vector3 mousePosition = UtilsClass.GetMouseWorldPosition();
-                if (!mouseActive && Vector2.Distance(lastMousePosition, (transform.position - mousePosition)) > 200f)
+                if (!mouseActive && Vector2.Distance(lastMousePosition, (transform.position - mousePosition)) > mouseSensi)
                 {
+                    Debug.Log("SET TO TRUE");
                     setMouseActive(true);
                 }
 
@@ -85,7 +86,6 @@ public class PlayerBehavior : MonoBehaviour
                 {
                     this.lastMousePosition = transform.position - mousePosition;
                     float angle = AngleBetweenVector2(transform.position, mousePosition);
-                    Debug.Log(angle);
                     if (angle > -45 && angle  < 45)
                     {
                         changeDirection(Vector2.right);
@@ -146,6 +146,13 @@ public class PlayerBehavior : MonoBehaviour
     {
         mouseActive = active;
         directionIndicator.SetActive(active);
+    }
+
+    public void InitMouse()
+    {
+        Vector3 mousePosition = UtilsClass.GetMouseWorldPosition();
+        this.lastMousePosition = transform.position - mousePosition;
+        setMouseActive(mouseActive);
     }
 
     private void updateMouseIndicator()

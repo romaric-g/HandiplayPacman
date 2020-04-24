@@ -132,6 +132,7 @@ public class GameManager : MonoBehaviour
     public void respawnPlayer()
     {
         this.player.transform.position = grid.GetWorldPosition(this.respawnX, this.respawnY);
+        this.player.InitMouse();
     }
     private void HandleClickToModifyGrid()
     {
