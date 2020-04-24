@@ -31,7 +31,7 @@ public class PlayerBehavior : MonoBehaviour
     private bool play = false;
     private bool changeSound = false;
 
-    public float mouseSensi = 200f;
+    public float mouseSensi = 100f;
     private bool mouseActive = false;
     private Vector2 lastMousePosition;
     public DirectionIndicator directionIndicator;
