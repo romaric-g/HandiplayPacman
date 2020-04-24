@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CodeMonkey.Utils;
 
 public class PlayerBehavior : MonoBehaviour
 {
@@ -30,10 +31,15 @@ public class PlayerBehavior : MonoBehaviour
     private bool play = false;
     private bool changeSound = false;
 
+    public float mouseSensi = 200f;
+    private bool mouseActive = true;
+    private Vector2 lastMousePosition;
+    public DirectionIndicator directionIndicator;
     // Start is called before the first frame update
     void Start()
     {
         this.currentSprite = m_frontSprite;
+        setMouseActive(mouseActive);
     }
 
     // Update is called once per frame
@@ -49,23 +55,55 @@ public class PlayerBehavior : MonoBehaviour
 
             if (Input.GetAxis("Horizontal") < 0f)
             {
-                this.nextDirection = Vector2.left;
-                this.currentSprite = m_leftSprite;
+                changeDirection( Vector2.left );
+                setMouseActive(false);
             }
-            if (Input.GetAxis("Horizontal") > 0f)
+            else if (Input.GetAxis("Horizontal") > 0f)
             {
-                this.nextDirection = Vector2.right;
-                this.currentSprite = m_rightSprite;
+                changeDirection(Vector2.right);
+                setMouseActive(false);
             }
-            if (Input.GetAxis("Vertical") > 0f)
+            else if (Input.GetAxis("Vertical") > 0f)
             {
-                this.nextDirection = Vector2.up;
-                this.currentSprite = m_backSprite;
+                changeDirection(Vector2.up);
+                setMouseActive(false);
             }
-            if (Input.GetAxis("Vertical") < 0f)
+            else if (Input.GetAxis("Vertical") < 0f)
             {
-                this.nextDirection = Vector2.down;
-                this.currentSprite = m_frontSprite;
+                changeDirection(Vector2.down);
+                setMouseActive(false);
+            }
+            else
+            {
+                Vector3 mousePosition = UtilsClass.GetMouseWorldPosition();
+                if (!mouseActive && Vector2.Distance(lastMousePosition, mousePosition) > 200f)
+                {
+                    setMouseActive(true);
+                }
+
+                if(mouseActive)
+                {
+                    this.lastMousePosition = mousePosition;
+                    float angle = AngleBetweenVector2(transform.position, mousePosition);
+                    Debug.Log(angle);
+                    if (angle > -45 && angle  < 45)
+                    {
+                        changeDirection(Vector2.right);
+                    }
+                    else if (angle > 45 && angle < 135)
+                    {
+                       changeDirection(Vector2.up);
+                    }
+                    else if (angle > 135 || angle < -135)
+                    {
+                       changeDirection(Vector2.left);
+                    }
+                    else if (angle > -135)
+                    {
+                      changeDirection(Vector2.down);
+                    }
+                    updateMouseIndicator();
+                }
             }
 
             if (this.lastPosition == this.transform.position)
@@ -97,6 +135,23 @@ public class PlayerBehavior : MonoBehaviour
 
     }
 
+    private float AngleBetweenVector2(Vector2 vec1, Vector2 vec2)
+    {
+        Vector2 diference = vec2 - vec1;
+        float sign = (vec2.y < vec1.y) ? -1.0f : 1.0f;
+        return Vector2.Angle(Vector2.right, diference) * sign;
+    }
+
+    private void setMouseActive(bool active)
+    {
+        mouseActive = active;
+        directionIndicator.SetActive(active);
+    }
+
+    private void updateMouseIndicator()
+    {
+        directionIndicator.SetDirection(nextDirection);
+    }
     /* EVENTS */
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -130,6 +185,26 @@ public class PlayerBehavior : MonoBehaviour
         m_rb2D.MovePosition(m_rb2D.position + Time.fixedDeltaTime * m_speed * vector2D);
     }
 
+    public void changeDirection(Vector2 vector2)
+    {
+        this.nextDirection = vector2;
+        if(vector2 == Vector2.up)
+        {
+            this.currentSprite = m_backSprite;
+        }
+        else if (vector2 == Vector2.right)
+        {
+            this.currentSprite = m_rightSprite;
+        }
+        else if (vector2 == Vector2.down)
+        {
+            this.currentSprite = m_frontSprite;
+        }
+        else if (vector2 == Vector2.left)
+        {
+            this.currentSprite = m_leftSprite;
+        }
+    }
     public void moveNextDirection()
     {
         if (nextDirection != Vector2.zero && this.currentDirection != this.nextDirection)
@@ -161,7 +236,7 @@ public class PlayerBehavior : MonoBehaviour
 
     public void ResetPlayer()
     {
-        this.life = 3;
+        setLife(3);
     }
 
     public void setLife(int life)
